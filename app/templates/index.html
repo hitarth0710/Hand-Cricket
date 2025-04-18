@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card text-center">
+            <div class="card-header bg-primary text-white">
+                <h2>Welcome to Hand Cricket</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">Play the classic Hand Cricket game using computer vision!</p>
+                <div class="game-instructions mb-4">
+                    <h4>How to Play:</h4>
+                    <ol class="text-start">
+                        <li>Choose to bat or bowl first</li>
+                        <li>Show your hand gesture (0-5 fingers) to the camera</li>
+                        <li>If batting, your fingers count as runs unless they match the AI's number</li>
+                        <li>If bowling, try to match the AI's number to get a wicket</li>
+                        <li>Each team has 5 wickets</li>
+                        <li>After a team loses all wickets, the other team tries to beat their score</li>
+                    </ol>
+                </div>
+                <div class="start-options">
+                    <h4>Start Game:</h4>
+                    <a href="{{ url_for('main.game_page') }}" class="btn btn-primary btn-lg m-2">Play Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

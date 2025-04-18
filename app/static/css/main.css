@@ -1,0 +1,62 @@
+body {
+    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-weight: 600;
+}
+
+.footer {
+    padding: 20px 0;
+    color: #6c757d;
+}
+
+/* Game specific styles */
+.score-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.wicket-display {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    margin: 0 2px;
+}
+
+.wicket-lost {
+    background-color: #ccc;
+}
+
+.winner-announcement {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+    margin: 20px 0;
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Game{% endblock %}
+
+{% block extra_css %}
+<style>
+    .camera-container {
+        position: relative;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    #camera-feed {
+        width: 100%;
+        border-radius: 8px;
+        border: 3px solid #007bff;
+    }
+    .game-controls {
+        margin-top: 20px;
+    }
+    .score-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .move-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+    .timer-circle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .game-result {
+        font-size: 1.5rem;
+        margin: 15px 0;
+        font-weight: bold;
+    }
+    .hidden {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3>Hand Cricket Game</h3>
+            </div>
+            <div class="card-body">
+                <div class="camera-container">
+                    <img id="camera-feed" src="" alt="Camera feed">
+                    <div id="timer-circle" class="timer-circle hidden">3</div>
+                </div>
+                
+                <div id="setup-controls" class="text-center">
+                    <h4>Choose your turn:</h4>
+                    <button id="bat-first" class="btn btn-success btn-lg m-2">Bat First</button>
+                    <button id="bowl-first" class="btn btn-info btn-lg m-2">Bowl First</button>
+                </div>
+                
+                <div id="game-controls" class="text-center hidden">
+                    <div class="game-status">
+                        <h4 id="turn-indicator"></h4>
+                        <div class="move-display">
+                            <span id="player-move-display">-</span> : <span id="ai-move-display">-</span>
+                        </div>
+                        <div id="result-message" class="game-result"></div>
+                    </div>
+                    <button id="show-move" class="btn btn-primary btn-lg m-2">Show Your Move</button>
+                    <button id="reset-game" class="btn btn-warning btn-lg m-2">Reset Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card score-card">
+            <div class="card-header bg-success text-white">
+                <h4>Scoreboard</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 text-center">
+                        <h5>Player</h5>
+                        <p class="display-4" id="player-score">0</p>
+                        <p>Wickets: <span id="player-wickets">5</span></p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <h5>AI</h5>
+                        <p class="display-4" id="ai-score">0</p>
+                        <p>Wickets: <span id="ai-wickets">5</span></p>
+                    </div>
+                </div>
+                <div id="target-container" class="text-center mt-3 hidden">
+                    <h5>Target: <span id="target-score">0</span></h5>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h4>How to Play</h4>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li><strong>0 fingers:</strong> Make a fist</li>
+                    <li><strong>1 finger:</strong> Show index finger</li>
+                    <li><strong>2 fingers:</strong> Show index and middle fingers</li>
+                    <li><strong>3 fingers:</strong> Show index, middle, and ring fingers</li>
+                    <li><strong>4 fingers:</strong> Show all fingers except thumb</li>
+                    <li><strong>5 fingers:</strong> Show all fingers including thumb</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+<script>
+        // Debug code for camera and socket connections
+        document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up socket debugging');
+        
+        // Make sure socket is defined (should be defined in game.js)
+        if (typeof socket === 'undefined') {
+            console.error('Socket not defined! Make sure game.js is loading correctly');
+            // Create socket if not already defined in game.js
+            socket = io();
+        }
+        
+        // Connection events
+        socket.on('connect', function() {
+            console.log('Socket connected successfully');
+            document.getElementById('camera-feed').style.borderColor = 'green';
+        });
+        
+        socket.on('disconnect', function() {
+            console.log('Socket disconnected');
+            document.getElementById('camera-feed').style.borderColor = 'red';
+        });
+        
+        socket.on('connect_error', function(error) {
+            console.error('Connection error:', error);
+            document.getElementById('camera-feed').style.borderColor = 'red';
+            alert('Socket connection error: ' + error);
+        });
+        
+        // Camera-specific events
+        socket.on('camera_update', function(data) {
+            console.log('Received camera update with move:', data.move);
+            // The frame should be displayed in your game.js, but let's verify
+            if (data.frame) {
+                console.log('Frame data received successfully');
+            }
+        });
+        
+        socket.on('camera_error', function(data) {
+            console.error('Camera error:', data.message);
+            alert('Camera error: ' + data.message);
+        });
+        
+        // Add button to test socket connection
+        const setupControls = document.getElementById('setup-controls');
+        const testButton = document.createElement('button');
+        testButton.className = 'btn btn-secondary mt-3';
+        testButton.innerText = 'Test Connection';
+        testButton.onclick = function() {
+            console.log('Testing socket connection...');
+            socket.emit('connect', {}, function() {
+                console.log('Connect callback received');
+            });
+            alert('Check console for connection logs');
+        };
+        setupControls.appendChild(testButton);
+    });
+</script>
+{% endblock %}
